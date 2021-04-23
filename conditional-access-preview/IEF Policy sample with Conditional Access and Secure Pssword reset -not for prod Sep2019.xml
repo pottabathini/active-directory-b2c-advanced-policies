@@ -1,4 +1,6 @@
-<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="b2ctechready.onmicrosoft.com" PolicyId="B2C_1A_CAPolicySample" PublicPolicyUri="http://b2ctechready.onmicrosoft.com/B2C_1A_CAPolicySample" TenantObjectId="ec0e2972-3403-4685-983a-7c0b8fbf7f86" DeploymentMode="Development" UserJourneyRecorderEndpoint="urn:journeyrecorder:applicationinsights">
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="cpimtestrk.onmicrosoft.com" PolicyId="B2C_1A_CAPolicySample" PublicPolicyUri="http://cpimtestrk.onmicrosoft.com/B2C_1A_CAPolicySample" TenantObjectId="ec0e2972-3403-4685-983a-7c0b8fbf7f86" DeploymentMode="Development" UserJourneyRecorderEndpoint="urn:journeyrecorder:applicationinsights">
   <BuildingBlocks>
     <ClaimsSchema>
       <!-- The ClaimsSchema is divided into three sections:
@@ -67,14 +69,9 @@
       </ClaimType>
       <!-- The password regular expression above is constructed for AAD passwords based on restrictions at https://msdn.microsoft.com/en-us/library/azure/jj943764.aspx
 
-        ^( # one of the following four combinations must appear in the password
-         (?=.*[a-z])(?=.*[A-Z])(?=.*\d) |            # matches lower case, upper case or digit
-         (?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]) |  # matches lower case, upper case or special character (i.e. non-alpha or digit)
-         (?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]) |     # matches lower case, digit, or special character
-         (?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])       # matches upper case, digit, or special character
+        ^( # one of the following four combinations must appear in the password (?=.*[a-z])(?=.*[A-Z])(?=.*\d) |            # matches lower case, upper case or digit (?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]) |  # matches lower case, upper case or special character (i.e. non-alpha or digit) (?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]) |     # matches lower case, digit, or special character (?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])       # matches upper case, digit, or special character
         )
-        ( # The password must match the following restrictions
-         [A-Za-z\d@#$%^&*\-_+=[\]{}|\\:',?/`~"();!] |   # The list of all acceptable characters (without .)
+        ( # The password must match the following restrictions [A-Za-z\d@#$%^&*\-_+=[\]{}|\\:',?/`~"();!] |   # The list of all acceptable characters (without .)
          \.(?!@)                                        # or . can appear as long as not followed by @
         ) {8,16}$                                       # the length must be between 8 and 16 chars inclusive
 
@@ -286,53 +283,88 @@
         <AdminHelpText>The access token returned by the identity provider.</AdminHelpText>
         <UserHelpText>The access token returned by the identity provider.</UserHelpText>
       </ClaimType>
-      	   <ClaimType Id="needToPerformMfa">
-		<DisplayName>needToPerformMfa</DisplayName>
+      <ClaimType Id="needToPerformMfa">
+        <DisplayName>needToPerformMfa</DisplayName>
         <DataType>boolean</DataType>
-	  </ClaimType>
-	  <ClaimType Id="CAChallengeIsMfa">
-		<DisplayName>CAChallengeIsMfa</DisplayName>
+      </ClaimType>
+      <ClaimType Id="CAChallengeIsMfa">
+        <DisplayName>CAChallengeIsMfa</DisplayName>
         <DataType>boolean</DataType>
-	  </ClaimType>
-	  <ClaimType Id="CAChallengeIsChgPwd">
-		<DisplayName>CAChallengeIsChgPwd</DisplayName>
+      </ClaimType>
+      <ClaimType Id="CAChallengeIsChgPwd">
+        <DisplayName>CAChallengeIsChgPwd</DisplayName>
         <DataType>boolean</DataType>
-	  </ClaimType>
+      </ClaimType>
+      <ClaimType Id="estsRequestId">
+        <DisplayName>estsRequestId</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>stores request</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="IsMfaRegistered">
+        <DisplayName>IsMfaRegistered</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>Is user registered for MFA</AdminHelpText>
+      </ClaimType>
+      <ClaimType Id="strongAuthenticationEmailAddress">
+        <DisplayName>Email Address</DisplayName>
+        <DataType>string</DataType>
+        <AdminHelpText>Email address that the user can use for strong authentication.</AdminHelpText>
+        <UserHelpText>Email address to use for strong authentication.</UserHelpText>
+        <UserInputType>TextBox</UserInputType>
+      </ClaimType>
+      <ClaimType Id="ReadOnlyEmail">
+        <DisplayName>Email Address</DisplayName>
+        <DataType>string</DataType>
+        <Mask Type="Regex" Regex="(?&lt;=.).(?=.*@)">*</Mask>
+        <AdminHelpText>Email address of the user</AdminHelpText>
+        <UserHelpText>Email address that can be used to contact you.</UserHelpText>
+        <UserInputType>Readonly</UserInputType>
+      </ClaimType>
+      <ClaimType Id="emails">
+        <DisplayName>Email Addresses</DisplayName>
+        <DataType>stringCollection</DataType>
+        <AdminHelpText>Email addresses of the user.</AdminHelpText>
+        <UserHelpText>Your email addresses.</UserHelpText>
+      </ClaimType>
+      <ClaimType Id="strongAuthEmailExists">
+        <DisplayName>strongAuthEmailExists</DisplayName>
+        <DataType>boolean</DataType>
+      </ClaimType>
     </ClaimsSchema>
     <ClaimsTransformations>
-    	 <ClaimsTransformation Id="SetCAChallengeIsMfa" TransformationMethod="StringCollectionContains">
+      <ClaimsTransformation Id="SetCAChallengeIsMfa" TransformationMethod="StringCollectionContains">
         <InputClaims>
           <InputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" TransformationClaimType="inputClaim" />
         </InputClaims>
         <InputParameters>
           <InputParameter Id="item" DataType="string" Value="mfa" />
-		  <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+          <InputParameter Id="ignoreCase" DataType="string" Value="true" />
         </InputParameters>
         <OutputClaims>
           <OutputClaim ClaimTypeReferenceId="CAChallengeIsMfa" TransformationClaimType="outputClaim" />
         </OutputClaims>
       </ClaimsTransformation>
-	  
-	  <ClaimsTransformation Id="SetCAChallengeIsChgPwd" TransformationMethod="StringCollectionContains">
+
+      <ClaimsTransformation Id="SetCAChallengeIsChgPwd" TransformationMethod="StringCollectionContains">
         <InputClaims>
           <InputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" TransformationClaimType="inputClaim" />
         </InputClaims>
         <InputParameters>
           <InputParameter Id="item" DataType="string" Value="chg_pwd" />
-		  <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+          <InputParameter Id="ignoreCase" DataType="string" Value="true" />
         </InputParameters>
         <OutputClaims>
           <OutputClaim ClaimTypeReferenceId="CAChallengeIsChgPwd" TransformationClaimType="outputClaim" />
         </OutputClaims>
       </ClaimsTransformation>
-	 <ClaimsTransformation Id="GenerateNeedToPerformMFAFlag" TransformationMethod="OrClaims">
+      <ClaimsTransformation Id="GenerateNeedToPerformMFAFlag" TransformationMethod="OrClaims">
         <InputClaims>
           <InputClaim ClaimTypeReferenceId="CAChallengeIsMfa" TransformationClaimType="inputClaim1" />
-		  <InputClaim ClaimTypeReferenceId="CAChallengeIsChgPwd" TransformationClaimType="inputClaim2" />
+          <InputClaim ClaimTypeReferenceId="CAChallengeIsChgPwd" TransformationClaimType="inputClaim2" />
         </InputClaims>
         <InputParameters>
           <InputParameter Id="compareTo" DataType="string" Value="chg_pwd" />
-		  <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+          <InputParameter Id="ignoreCase" DataType="string" Value="true" />
         </InputParameters>
         <OutputClaims>
           <OutputClaim ClaimTypeReferenceId="needToPerformMfa" TransformationClaimType="outputClaim" />
@@ -385,6 +417,64 @@
           <OutputClaim ClaimTypeReferenceId="conditionalAccessChallenge" TransformationClaimType="extractedItem" />
         </OutputClaims>
       </ClaimsTransformation>
+      <ClaimsTransformation Id="IsMfaRegistered" TransformationMethod="DoesClaimExist">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="IsMfaRegistered" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="AddStrongAuthenticationEmailToEmails" TransformationMethod="AddItemToStringCollection">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" TransformationClaimType="item" />
+          <InputClaim ClaimTypeReferenceId="emails" TransformationClaimType="collection" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="emails" TransformationClaimType="collection" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="CheckIfStrongAuthEmailExists" TransformationMethod="DoesClaimExist">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="strongAuthEmailExists" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="AssertEmailAndStrongAuthenticationEmailAddressAreEqual" TransformationMethod="AssertStringClaimsAreEqual">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" TransformationClaimType="inputClaim1" />
+          <InputClaim ClaimTypeReferenceId="email" TransformationClaimType="inputClaim2" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="stringComparison" DataType="string" Value="ordinalIgnoreCase" />
+        </InputParameters>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="GetStrongAuthenticationEmail" TransformationMethod="CopyClaim">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="ReadOnlyEmail" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="SetStrongAuthenticationEmail" TransformationMethod="CopyClaim">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="email" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" TransformationClaimType="outputClaim" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="GetEmailFromEmails" TransformationMethod="GetSingleItemFromStringCollection">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="emails" TransformationClaimType="collection" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="ReadOnlyEmail" TransformationClaimType="extractedItem" />
+        </OutputClaims>
+      </ClaimsTransformation>
     </ClaimsTransformations>
     <ClientDefinitions>
       <ClientDefinition Id="DefaultWeb">
@@ -393,13 +483,13 @@
     </ClientDefinitions>
     <ContentDefinitions>
       <!-- This content definition is to render an error page that displays unhandled errors. -->
-      	  <ContentDefinition Id="api.selfasserted.progressiveprofile">
+      <ContentDefinition Id="api.selfasserted.progressiveprofile">
         <LoadUri>~/tenant/default/AzureBlue/selfAsserted.cshtml</LoadUri>
         <RecoveryUri>~/common/default_page_error.html</RecoveryUri>
         <DataUri>urn:com:microsoft:aad:b2c:elements:selfasserted:1.1.0</DataUri>
         <Metadata>
           <Item Key="DisplayName">Collect information from user page</Item>
-		  <Item Key="TemplateId">azureBlue</Item>
+          <Item Key="TemplateId">azureBlue</Item>
         </Metadata>
       </ContentDefinition>
       <ContentDefinition Id="api.phonefactor">
@@ -537,6 +627,7 @@
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="localAccountAuthentication" />
             <OutputClaim ClaimTypeReferenceId="conditionalAccessClaimCollection" PartnerClaimType="xms_chlgs" />
             <OutputClaim PartnerClaimType="{oauth2:access_token}" ClaimTypeReferenceId="identityProviderAccessToken" />
+            <OutputClaim ClaimTypeReferenceId="estsRequestId" />
           </OutputClaims>
           <OutputClaimsTransformations>
             <OutputClaimsTransformation ReferenceId="ExtractConditionalAccessChallenge" />
@@ -606,12 +697,12 @@
           </OutputClaims>
           <ValidationTechnicalProfiles>
             <ValidationTechnicalProfile ReferenceId="login-NonInteractive" />
-        <ValidationTechnicalProfile ReferenceId= "GenerateNeedToPerformMFAFlag" >
-				<Preconditions>
-					<Precondition Type="ClaimsExist" ExecuteActionsIf="false">
-						<Value>conditionalAccessClaimCollection</Value>
-						<Action>SkipThisValidationTechnicalProfile</Action>
-					</Precondition>
+            <ValidationTechnicalProfile ReferenceId= "GenerateNeedToPerformMFAFlag">
+              <Preconditions>
+                <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+                  <Value>conditionalAccessClaimCollection</Value>
+                  <Action>SkipThisValidationTechnicalProfile</Action>
+                </Precondition>
               </Preconditions>
             </ValidationTechnicalProfile>
           </ValidationTechnicalProfiles>
@@ -639,7 +730,7 @@
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
           <EnabledForUserJourneys>Always</EnabledForUserJourneys>
         </TechnicalProfile>
-        		<TechnicalProfile Id="SelfAsserted-PasswordReset">
+        <TechnicalProfile Id="SelfAsserted-PasswordReset">
           <DisplayName>Force Password Change</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
@@ -665,7 +756,7 @@
     <ClaimsProvider>
       <DisplayName>Azure Active Directory</DisplayName>
       <TechnicalProfiles>
-      	   <TechnicalProfile Id="AAD-UserWritePasswordUsingObjectIdWithoutStrongAuth">
+        <TechnicalProfile Id="AAD-UserWritePasswordUsingObjectIdWithoutStrongAuth">
           <Metadata>
             <Item Key="Operation">Write</Item>
             <Item Key="RaiseErrorIfClaimsPrincipalDoesNotExist">true</Item>
@@ -700,8 +791,10 @@
           <DisplayName>Azure Active Directory</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.AzureActiveDirectoryProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
-            <Item Key="ApplicationObjectId">b68b6280-49a2-4fb1-aa7e-b10b551d0fd0</Item>
-            <Item Key="ClientId">2d4f6b1c-4c77-4346-b3e1-a563aabfb866</Item>
+            <Item Key="ApplicationObjectId">28b42940-2ac4-4fc9-811f-e87b915077cf</Item>
+            <Item Key="ClientId">367f82e6-301a-42e2-8a3d-b4f90f49d17a</Item>
+            <!-- <Item Key="ApplicationObjectId">b68b6280-49a2-4fb1-aa7e-b10b551d0fd0</Item>
+            <Item Key="ClientId">2d4f6b1c-4c77-4346-b3e1-a563aabfb866</Item> -->
             <!-- IEF AppID: 2d4f6b1c-4c77-4346-b3e1-a563aabfb866, IEF Object ID b68b6280-49a2-4fb1-aa7e-b10b551d0fd0 -->
           </Metadata>
           <CryptographicKeys>
@@ -756,6 +849,7 @@
             <OutputClaim ClaimTypeReferenceId="objectId" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="localAccountAuthentication" />
             <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" />
             <!-- Optional claims -->
             <OutputClaim ClaimTypeReferenceId="userPrincipalName" />
             <OutputClaim ClaimTypeReferenceId="otherMails" />
@@ -783,11 +877,33 @@
             <OutputClaim ClaimTypeReferenceId="extension_shoeSize" />
             <OutputClaim ClaimTypeReferenceId="extension_phoneNumber" />
             <OutputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <OutputClaim ClaimTypeReferenceId="strongAuthenticationEmailAddress" />
           </OutputClaims>
           <OutputClaimsTransformations>
             <OutputClaimsTransformation ReferenceId="CreateOtherMailsFromEmail" />
           </OutputClaimsTransformations>
           <IncludeTechnicalProfile ReferenceId="AAD-Common" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="GetStrongAuthenticationEmail">
+          <DisplayName>Get StrongAuthentication Email</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="ReadOnlyEmail" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="GetStrongAuthenticationEmail" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+        <TechnicalProfile Id="GetEmailAddress">
+          <DisplayName>Get Email Address</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="ReadOnlyEmail" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="GetEmailFromEmails" />
+          </OutputClaimsTransformations>
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
@@ -806,10 +922,12 @@
           </CryptographicKeys>
           <InputClaimsTransformations>
             <InputClaimsTransformation ReferenceId="CreateUserIdForMFA" />
+            <InputClaimsTransformation ReferenceId="IsMfaRegistered" />
           </InputClaimsTransformations>
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="userIdForMFA" PartnerClaimType="UserId" />
             <InputClaim ClaimTypeReferenceId="strongAuthenticationPhoneNumber" />
+            <InputClaim ClaimTypeReferenceId="IsMfaRegistered" />
           </InputClaims>
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="Verified.strongAuthenticationPhoneNumber" />
@@ -851,7 +969,7 @@
             <OutputClaim ClaimTypeReferenceId="isActiveMFASession" DefaultValue="true" />
           </OutputClaims>
         </TechnicalProfile>
-        
+
         <TechnicalProfile Id="GenerateNeedToPerformMFAFlag">
           <DisplayName>GenerateNeedToPerformMFAFlag</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -859,9 +977,9 @@
             <OutputClaim ClaimTypeReferenceId="needToPerformMfa" />
           </OutputClaims>
           <OutputClaimsTransformations>
-			<OutputClaimsTransformation ReferenceId="SetCAChallengeIsMfa" />
-			<OutputClaimsTransformation ReferenceId="SetCAChallengeIsChgPwd" />
-			<OutputClaimsTransformation ReferenceId="GenerateNeedToPerformMFAFlag" />
+            <OutputClaimsTransformation ReferenceId="SetCAChallengeIsMfa" />
+            <OutputClaimsTransformation ReferenceId="SetCAChallengeIsChgPwd" />
+            <OutputClaimsTransformation ReferenceId="GenerateNeedToPerformMFAFlag" />
           </OutputClaimsTransformations>
         </TechnicalProfile>
       </TechnicalProfiles>
@@ -949,7 +1067,7 @@
               <Value>conditionalAccessChallenge</Value>
               <Action>SkipThisOrchestrationStep</Action>
             </Precondition>
-			<Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>needToPerformMfa</Value>
               <Value>False</Value>
               <Action>SkipThisOrchestrationStep</Action>
@@ -970,11 +1088,11 @@
             <ClaimsExchange Id="AADUserWriteWithObjectId" TechnicalProfileReferenceId="AAD-UserWritePhoneNumberUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>
-       		<OrchestrationStep Order="6" Type="ClaimsExchange">
+        <OrchestrationStep Order="6" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
               <Value>conditionalAccessChallenge</Value>
-			  <Value>chg_pwd</Value>
+              <Value>chg_pwd</Value>
               <Action>SkipThisOrchestrationStep</Action>
             </Precondition>
           </Preconditions>
@@ -982,7 +1100,12 @@
             <ClaimsExchange Id="PasswordReset" TechnicalProfileReferenceId="SelfAsserted-PasswordReset" />
           </ClaimsExchanges>
         </OrchestrationStep>
-               <OrchestrationStep Order="7" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="ShowBlockPage">
+        <OrchestrationStep Order="7" Type="InvokeSubJourney">
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="RetrieveUserEmail" />
+          </JourneyList>
+        </OrchestrationStep>
+        <OrchestrationStep Order="8" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="ShowBlockPage">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
               <Value>conditionalAccessChallenge</Value>
@@ -991,7 +1114,7 @@
             </Precondition>
           </Preconditions>
         </OrchestrationStep>
-        <OrchestrationStep Order="8" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer">
+        <OrchestrationStep Order="9" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>conditionalAccessChallenge</Value>
@@ -1004,6 +1127,34 @@
       <ClientDefinition ReferenceId="DefaultWeb" />
     </UserJourney>
   </UserJourneys>
+  <SubJourneys>
+    <SubJourney Id="RetrieveUserEmail" Type="Call">
+      <OrchestrationSteps>
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>strongAuthenticationEmailAddress</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="GetStrongAuthenticationEmail" TechnicalProfileReferenceId="GetStrongAuthenticationEmail" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
+              <Value>strongAuthenticationEmailAddress</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="GetEmailAddress" TechnicalProfileReferenceId="GetEmailAddress" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+  </SubJourneys>
   <RelyingParty>
     <DefaultUserJourney ReferenceId="SignUpOrSignIn" />
     <UserJourneyBehaviors>
